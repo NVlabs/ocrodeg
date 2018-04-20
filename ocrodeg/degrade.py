@@ -1,5 +1,6 @@
 from random import randint
 from numpy import *
+import random as pyr
 import scipy.ndimage as ndi
 import numpy as np
 import pylab
@@ -17,19 +18,11 @@ def autoinvert(image):
 # random geometric transformations
 #
 
-def random_trs(translation=0.05, rotation=2.0, scale=0.1, aniso=0.1):
-    if not isinstance(translation, (tuple, list)):
-        translation = (-translation, translation)
-    if not isinstance(rotation, (tuple, list)):
-        rotation = (-rotation, rotation)
-    if not isinstance(scale, (tuple, list)):
-        scale = (-scale, scale)
-    if not isinstance(aniso, (tuple, list)):
-        aniso = (-aniso, aniso)
+def random_transform(translation=(-0.05, 0.05), rotation=(-2, 2), scale=(-0.1, 0.1), aniso=(-0.1, 0.1)):
     dx = pyr.uniform(*translation)
     dy = pyr.uniform(*translation)
     angle = pyr.uniform(*rotation)
-    angle = alpha * pi / 180.0
+    angle = angle * pi / 180.0
     scale = 10**pyr.uniform(*scale)
     aniso = 10**pyr.uniform(*aniso)
     return dict(angle=angle, scale=scale, aniso=aniso, translation=(dx, dy))

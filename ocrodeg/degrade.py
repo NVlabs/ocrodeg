@@ -1,10 +1,12 @@
-from random import randint
-from numpy import *
 import random as pyr
-import scipy.ndimage as ndi
+import warnings
+from random import randint
+
 import numpy as np
 import pylab
-import warnings
+import scipy.ndimage as ndi
+from numpy import *
+
 
 def autoinvert(image):
     assert amin(image) >= 0

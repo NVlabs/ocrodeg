@@ -4,13 +4,7 @@
 
 from __future__ import print_function
 
-import glob
-import os
-import os.path
 import sys
-import time
-import traceback
-import urllib
 from distutils.core import setup  # , Extension, Command
 
 assert sys.version_info[0] == 2 and sys.version_info[1] >= 7,\

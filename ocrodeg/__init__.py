@@ -1,1 +1,1 @@
-from degrade import *
+from degrade import *  # noqa

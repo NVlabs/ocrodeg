@@ -103,19 +103,19 @@ def make_noise_at_scale(shape, scale):
         result = ndi.zoom(data, scale)
     return result[:h, :w]
 
-def make_multiscale_noise(shape, scales, weights=None, range=(0.0, 1.0)):
+def make_multiscale_noise(shape, scales, weights=None, limits=(0.0, 1.0)):
     if weights is None: weights = [1.0] * len(scales)
     result = make_noise_at_scale(shape, scales[0]) * weights[0]
     for s, w in zip(scales, weights):
         result += make_noise_at_scale(shape, s) * w
-    lo, hi = range
+    lo, hi = limits
     result -= amin(result)
     result /= amax(result)
     result *= (hi-lo)
     result += lo
     return result
 
-def make_multiscale_noise_uniform(shape, srange=(1.0, 100.0), nscales=4, range=(0.0, 1.0)):
+def make_multiscale_noise_uniform(shape, srange=(1.0, 100.0), nscales=4, limits=(0.0, 1.0)):
     lo, hi = log10(srange[0]), log10(srange[1])
     scales = np.random.uniform(size=nscales)
     scales = add.accumulate(scales)
@@ -125,7 +125,7 @@ def make_multiscale_noise_uniform(shape, srange=(1.0, 100.0), nscales=4, range=(
     scales += lo
     scales = 10**scales
     weights = 2.0 * np.random.uniform(size=nscales)
-    return make_multiscale_noise(shape, scales, weights=weights, range=range)
+    return make_multiscale_noise(shape, scales, weights=weights, limits=limits)
 
 #
 # random blobs
@@ -136,7 +136,7 @@ def random_blobs(shape, blobdensity, size, roughness=2.0):
     h, w = shape
     numblobs = int(blobdensity * w * h)
     mask = np.zeros((h, w), 'i')
-    for i in xrange(numblobs):
+    for i in range(numblobs):
         mask[randint(0, h-1), randint(0, w-1)] = 1
     dt = ndi.distance_transform_edt(1-mask)
     mask =  np.array(dt < size, 'f')
@@ -166,11 +166,11 @@ def make_fiber(l, a, stepsize=0.5):
     sins = add.accumulate(sin(angles)*stepsize)
     return array([coss, sins]).transpose(1, 0)
 
-def make_fibrous_image(shape, nfibers=300, l=300, a=0.2, stepsize=0.5, range=(0.1, 1.0), blur=1.0):
+def make_fibrous_image(shape, nfibers=300, l=300, a=0.2, stepsize=0.5, limits=(0.1, 1.0), blur=1.0):
     h, w = shape
-    lo, hi = range
+    lo, hi = limits
     result = zeros(shape)
-    for i in xrange(nfibers):
+    for i in range(nfibers):
         v = pylab.rand() * (hi-lo) + lo
         fiber = make_fiber(l, a, stepsize=stepsize)
         y, x = randint(0, h-1), randint(0, w-1)
@@ -195,8 +195,8 @@ def make_fibrous_image(shape, nfibers=300, l=300, a=0.2, stepsize=0.5, range=(0.
 def printlike_multiscale(image, blur=1.0, blotches=5e-5):
     selector = autoinvert(image)
     selector = random_blotches(selector, 3*blotches, blotches)
-    paper = make_multiscale_noise_uniform(image.shape, range=(0.5, 1.0))
-    ink = make_multiscale_noise_uniform(image.shape, range=(0.0, 0.5))
+    paper = make_multiscale_noise_uniform(image.shape, limits=(0.5, 1.0))
+    ink = make_multiscale_noise_uniform(image.shape, limits=(0.0, 0.5))
     blurred = ndi.gaussian_filter(selector, blur)
     printed = blurred * ink + (1-blurred) * paper
     return printed
@@ -205,9 +205,9 @@ def printlike_multiscale(image, blur=1.0, blotches=5e-5):
 def printlike_fibrous(image, blur=1.0, blotches=5e-5):
     selector = autoinvert(image)
     selector = random_blotches(selector, 3*blotches, blotches)
-    paper = make_multiscale_noise(image.shape, [1.0, 5.0, 10.0, 50.0], weights=[1.0, 0.3, 0.5, 0.3], range=(0.7, 1.0))
-    paper -= make_fibrous_image(image.shape, 300, 500, 0.01, range=(0.0, 0.25), blur=0.5)
-    ink = make_multiscale_noise(image.shape, [1.0, 5.0, 10.0, 50.0], range=(0.0, 0.5))
+    paper = make_multiscale_noise(image.shape, [1.0, 5.0, 10.0, 50.0], weights=[1.0, 0.3, 0.5, 0.3], limits=(0.7, 1.0))
+    paper -= make_fibrous_image(image.shape, 300, 500, 0.01, limits=(0.0, 0.25), blur=0.5)
+    ink = make_multiscale_noise(image.shape, [1.0, 5.0, 10.0, 50.0], limits=(0.0, 0.5))
     blurred = ndi.gaussian_filter(selector, blur)
     printed = blurred * ink + (1-blurred) * paper
     return printed

@@ -18,4 +18,9 @@ setup(
     description="Document image degradation and augmentation for OCR.",
     packages=["ocrodeg"],
     scripts=scripts,
+    install_requires=[
+        'numpy',
+        'matplotlib',
+        'scipy'
+    ],
 )

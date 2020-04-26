@@ -1,2 +1,2 @@
-# from degrade import *  # noqa
-from .degrade import *  # noqa
+from __future__ import absolute_import
+from ocrodeg.degrade import *  # noqa

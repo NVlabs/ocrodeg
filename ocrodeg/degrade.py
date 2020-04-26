@@ -133,6 +133,7 @@ def make_multiscale_noise_uniform(shape, srange=(1.0, 100.0), nscales=4, limits=
 
 def random_blobs(shape, blobdensity, size, roughness=2.0):
     from random import randint
+    from builtins import range  # python2 compatible
     h, w = shape
     numblobs = int(blobdensity * w * h)
     mask = np.zeros((h, w), 'i')
